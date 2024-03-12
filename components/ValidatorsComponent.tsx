@@ -16,7 +16,7 @@ const ValidatorsComponent: React.FC<ValidatorsProps> = ({ validators, height }) 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Block Validators (Signatures)</CardTitle>
+        <CardTitle>Signatures</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>

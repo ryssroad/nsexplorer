@@ -3,6 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { TransactionType } from "@/app/types/transaction";
 
 type BlockTransactionsProps = {
@@ -18,6 +19,7 @@ const BlockTransactionsComponent: React.FC<BlockTransactionsProps> = ({ transact
         <CardTitle>Block Transactions</CardTitle>
       </CardHeader>
       <CardContent>
+      <ScrollArea className="h-full w-full rounded-md border">
         <Table>
           <TableBody>
             {transactions.map((transaction, index) => (
@@ -28,6 +30,7 @@ const BlockTransactionsComponent: React.FC<BlockTransactionsProps> = ({ transact
             ))}
           </TableBody>
         </Table>
+        </ScrollArea>
       </CardContent>
     </Card>
   );
