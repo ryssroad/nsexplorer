@@ -9,8 +9,7 @@ import ValidatorsComponent from "@/components/ValidatorsComponent"
 import { BlockDetails } from "@/app/types/blockDetails"
 import { TransactionType } from "@/app/types/transaction"
 import { Validator } from "@/app/types/validator"
-
-// Make sure to mark the component with "use client" if it only runs client-side
+    
 const BlockDetailsPage: React.FC = () => {
   const pathname = usePathname()
   const [blockDetails, setBlockDetails] = useState<BlockDetails | null>(null)
@@ -23,9 +22,6 @@ const BlockDetailsPage: React.FC = () => {
 
   useEffect(() => {
     const fetchAndSetData = async () => {
-    // const pathname = usePathname();
-    //   const heightMatch = pathname.match(/\/block\/(\d+)/);
-    //   const height = heightMatch ? heightMatch[1] : null;
 
       if (height) {
         try {
@@ -34,8 +30,7 @@ const BlockDetailsPage: React.FC = () => {
 
           if (data) {
             setBlockDetails(data);
-            setTransactions(data.tx_hashes); // Assuming 'tx_hashes' is the key for transactions data
-            // Continue to set validators if they are part of this data as well
+            setTransactions(data.tx_hashes);
             const validatorsResponse = await fetch(`${process.env.NEXT_PUBLIC_VALIDATORS_API_URL}/validators?height=${height}&per_page=10`);
             const validatorsData = await validatorsResponse.json();
             setValidators(validatorsData.result.validators);
