@@ -1,0 +1,24 @@
+// layout.tsx
+import React from 'react';
+import { SiteHeader } from "@/components/site-header";
+import { ThemeProvider } from "@/components/theme-provider";
+import "@/styles/globals.css";
+
+interface RootLayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout = ({ children }: RootLayoutProps) => {
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <div className="relative flex min-h-screen flex-col">
+        <SiteHeader />
+        <main className="flex-1">
+          {children}
+        </main>
+      </div>
+    </ThemeProvider>
+  );
+};
+
+export default Layout;
