@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import BlockDetailsComponent from "@/components/BlockDetailsComponent"
 import BlockTransactionsComponent from "@/components/BlockTransactionsComponent"
@@ -62,12 +62,30 @@ const BlockDetailsPage: React.FC = () => {
   }, [pathname])
 
   if (isLoading) {
-    return <p>Loading...</p>
+    return (
+      <div className="p-5 space-y-5">
+        
+        <Skeleton className="w-full h-44 my-2" />
+        <div className="flex flex-wrap -mx-2">
+        <Skeleton className="w-full lg:w-1/2 h-44 px-28" />
+        <Skeleton className="w-full lg:w-1/2 h-44 px-28" />
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <p>Error: {error}</p>
+    return (
+      <Alert>
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
   }
+
+  // if (error) {
+  //   return <p>Error: {error}</p>
+  // }
 
   return (
     <div className="p-5 space-y-5">

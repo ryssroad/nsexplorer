@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 
@@ -30,9 +31,11 @@ interface BlockInfo {
 
 }
 
+
+
 const BlocksPage: React.FC = () => {
   const [blocks, setBlocks] = useState<BlockInfo[]>([]);
-
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchLastTenBlocks = async () => {
       try {
@@ -62,21 +65,23 @@ const BlocksPage: React.FC = () => {
           lastHeight--; // уменьшаем высоту для получения предыдущего блока
         }
         setBlocks(blocksInfo);
+        setIsLoading(false);
       } catch (error) {
         console.error("Could not fetch blocks:", error);
+        setIsLoading(false);
       }
     };
 
     fetchLastTenBlocks();
   }, []);
 
-  return (
-    // <Card>
-    //   <CardHeader>
-    //     <CardTitle>Last 10 Blocks</CardTitle>
-    //     <CardDescription>Details of the last 10 blocks in the blockchain.</CardDescription>
-    //   </CardHeader>
-    //   <CardContent>
+  return isLoading ? (
+    <div className='pt-14'>
+    <Skeleton className="mb-4 w-full h-6 rounded" />
+    <Skeleton className="mb-4 w-full h-6 rounded" />
+    <Skeleton className="mb-4 w-full h-6 rounded" />
+  </div>
+) : (
         <Table>
           <TableCaption>A summary of the last 10 blocks.</TableCaption>
           <TableHeader>

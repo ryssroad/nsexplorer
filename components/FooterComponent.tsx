@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { formatDistanceToNow } from "date-fns"
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
 
 interface LastBlockInfo {
@@ -11,6 +11,7 @@ interface LastBlockInfo {
 
 const FooterComponent: React.FC = () => {
   const [lastBlockInfo, setLastBlockInfo] = useState<LastBlockInfo | null>(null)
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchLastBlockInfo = async () => {
@@ -27,16 +28,22 @@ const FooterComponent: React.FC = () => {
           time: header.time,
           txCount: tx_hashes.length,
         })
+        setIsLoading(false);
       } catch (error) {
         console.error("Could not fetch last block info:", error)
+        setIsLoading(false);
       }
     }
 
     fetchLastBlockInfo()
   }, [])
 
-  if (!lastBlockInfo) {
-    return <footer>Loading last block information...</footer>
+  if (isLoading) {
+    return (
+      <footer>
+        <Skeleton className="w-full h-6 my-2" />
+      </footer>
+    );
   }
 
   return (

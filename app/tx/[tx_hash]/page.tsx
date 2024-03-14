@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-
-// Assuming you have a component that properly renders the details of the transaction
+import { Skeleton } from "@/components/ui/skeleton";
 import TransactionDetailsComponent from '@/components/TransactionDetailsComponent';
 
 const TransactionDetailsPage: React.FC = () => {
@@ -54,7 +53,12 @@ const TransactionDetailsPage: React.FC = () => {
   }, [pathname, searchParams]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="p-5 space-y-4">
+        <Skeleton className="w-full h-44" />
+        <Skeleton className="w-full h-44" />
+      </div>
+    );
   }
 
   if (error) {
