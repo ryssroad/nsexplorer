@@ -51,14 +51,14 @@ const FooterComponent: React.FC = () => {
       <TableBody>
         <TableRow>
           <TableCell className="text-slate-400 text-right">Last Block Height:</TableCell>
-          <TableCell className="text-start">{lastBlockInfo.height}</TableCell>
+          <TableCell className="text-start">{lastBlockInfo?.height}</TableCell>
 
           <TableCell className="text-slate-400 text-right">TX count:</TableCell>
-          <TableCell className="text-start">{lastBlockInfo.txCount}</TableCell>
+          <TableCell className="text-start">{lastBlockInfo?.txCount}</TableCell>
 
           <TableCell className="text-slate-400 text-right">Last Block Time:</TableCell>
           <TableCell>
-            {formatDistanceToNow(new Date(lastBlockInfo.time), {
+            {lastBlockInfo && formatDistanceToNow(new Date(lastBlockInfo.time), {
               addSuffix: true,
             })}
           </TableCell>

@@ -15,7 +15,7 @@ export const siteConfig = {
     },
     {
       title: "Transactions",
-      href: "/txs",
+      href: "/transactions",
     },
     {
       title: "Proposals",
