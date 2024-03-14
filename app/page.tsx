@@ -13,8 +13,11 @@ export default function SearchPage() {
 
 const handleSearchSubmit = (event: { preventDefault: () => void; }) => {
   event.preventDefault();
-  // No need to check for router.isReady as this hook behaves differently
-  router.push(`/block/${encodeURIComponent(searchInput)}`);
+  const isTxHash = /^[0-9A-Fa-f]{64}$/.test(searchInput);
+  const path = isTxHash
+      ? `/tx/${searchInput.toLowerCase()}`  // Path for transaction details
+      : `/block/${encodeURIComponent(searchInput)}`;
+  router.push(path);
 };
 
   return (
