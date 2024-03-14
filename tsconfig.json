@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2015", // or a higher version like "es6", "es2017", etc.
+    "target": "es2015",
     "downlevelIteration": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -29,7 +29,7 @@
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"],
   "paths": {
-    "@/types/*": ["types/*"], // Это соответствует псевдониму '@' каталогу types
-    // другие пути...
-  },
+    "@/types/*": ["types/*"]
+  }
 }
+

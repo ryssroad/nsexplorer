@@ -65,12 +65,7 @@ const TransactionDetailsPage: React.FC = () => {
     <div>
       {transactionData && (
         <TransactionDetailsComponent
-          transaction={{
-            hash: transactionData.hash,
-            block_id: transactionData.block_id,
-            tx_type: transactionData.tx_type,
-            return_code: transactionData.return_code,
-          }}
+          transaction={transactionData}
           rawTransactionData={JSON.stringify(transactionData, null, 2)}
         />
       )}
