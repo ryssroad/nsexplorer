@@ -102,7 +102,10 @@ const ValidatorsPage: React.FC = () => {
             <TableRow key={validator.address}>
               <TableCell>{validator.moniker}</TableCell>
               <TableCell>
-                <Link className="text-blue-500 hover:text-blue-700" href={`/validators/${validator.address}`}>
+                <Link
+                  className="text-blue-500 hover:text-blue-700"
+                  href={`/validators/${validator.address}`}
+                  legacyBehavior>
                   {validator.address}
                 </Link>
               </TableCell>

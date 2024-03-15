@@ -77,7 +77,7 @@ const TransactionDetailsComponent: React.FC<
                     <Link
                       href={`/block/${blockHeight}`}
                       className="text-blue-600 hover:text-blue-800 visited:text-purple-600"
-                    >
+                      legacyBehavior>
                       {blockHeight}
                     </Link>
                   ) : (
@@ -113,7 +113,7 @@ const TransactionDetailsComponent: React.FC<
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 export default TransactionDetailsComponent

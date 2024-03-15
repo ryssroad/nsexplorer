@@ -73,10 +73,10 @@ const BlocksPage: React.FC = () => {
         {blocks.map((block, index) => (
           <TableRow key={index}>
             <TableCell className="font-medium">
-              <Link 
+              <Link
                 href={`/block/${block.header_height}`}
                 className="text-blue-600 hover:text-blue-800 visited:text-purple-600"
-              >
+                legacyBehavior>
                 {block.header_height}
               </Link>
             </TableCell>

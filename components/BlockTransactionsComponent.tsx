@@ -33,7 +33,7 @@ const BlockTransactionsComponent: React.FC<BlockTransactionsProps> = ({
                     <Link
                       href={`/tx/${transaction.hash_id}`}
                       className="text-blue-600 hover:text-blue-800 visited:text-purple-600"
-                    >
+                      legacyBehavior>
                       {transaction.hash_id}
                     </Link>
                   </TableCell>
@@ -44,7 +44,7 @@ const BlockTransactionsComponent: React.FC<BlockTransactionsProps> = ({
         </ScrollArea>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export default BlockTransactionsComponent
