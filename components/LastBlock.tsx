@@ -70,7 +70,11 @@ const LastBlockComponent: React.FC = () => {
           <TableCell>{lastBlockInfo?.txCount}</TableCell>
           <TableCell className="text-slate-400 text-right">Last Block Time:</TableCell>
           <TableCell>
-            <LastBlockTime lastBlockInfo={lastBlockInfo} />
+            {lastBlockInfo && (
+              <span>
+                {formatDistanceToNow(new Date(lastBlockInfo.time), { addSuffix: true })}
+              </span>
+            )}
           </TableCell>
         </TableRow>
       </TableBody>
