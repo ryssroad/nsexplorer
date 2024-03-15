@@ -1,104 +1,87 @@
-"use client"
-
-import React, { useEffect, useState } from "react"
-
-import { Skeleton } from "@/components/ui/skeleton"
+"use client";
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatDistanceToNow } from 'date-fns';
+import Link from 'next/link';
 
-interface TransactionData {
-  hash: string
-  height: string
-  status: "success" | "failed"
+interface TransactionInfo {
+  hash: string;
+  header_height: number;
+  header_time: string;
+  return_code: number;
 }
 
 const TransactionsPage: React.FC = () => {
-  const [transactions, setTransactions] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [transactions, setTransactions] = useState<TransactionInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const ws = new WebSocket("wss://nam-rpc.systemd.run/websocket")
-
-    ws.onopen = () => {
-      console.log("WebSocket соединение установлено")
-      ws.send(
-        JSON.stringify({
-          jsonrpc: "2.0",
-          method: "subscribe",
-          id: "0",
-          params: {
-            query: "tm.event = 'Tx'",
-          },
-        })
-      )
-    }
-
-    ws.onmessage = (event) => {
-      console.log("Получено сообщение:", event.data)
-      const data = JSON.parse(event.data)
-      const txResult = data?.result?.data?.value?.TxResult
-      const txHash = data?.result?.events["tx.hash"][0] // Извлекаем хеш транзакции
-      const txHeight = data?.result?.events["tx.height"][0]
-
-      if (txResult && txHash && txHeight) {
-        const newTransaction: TransactionData = {
-          hash: txHash, // Используем извлеченный хеш
-          height: txHeight, // Используем извлеченную высоту блока
-          status:
-            txResult.result !== null && txResult.result !== 0
-              ? "success"
-              : "failed", // Статус транзакции
+    const fetchLastTenTransactions = async () => {
+      try {
+        const response = await fetch("https://namada-explorer-api.stakepool.dev.br/node/transactions/list/10");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
         }
-        setTransactions((prev) => [...prev, newTransaction])
+        const data = await response.json();
+        const transactionsInfo: TransactionInfo[] = data.map((transaction: any) => ({
+          hash: transaction.hash,
+          header_height: transaction.header_height,
+          header_time: transaction.header_time,
+          return_code: transaction.return_code,
+        }));
+        setTransactions(transactionsInfo);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Could not fetch transactions:", error);
+        setIsLoading(false);
       }
-      setLoading(false)
-    }
+    };
 
-    ws.onerror = (error) => {
-      console.error("WebSocket ошибка:", error)
-      setLoading(false)
-    }
+    fetchLastTenTransactions();
+  }, []);
 
-    ws.onclose = () => {
-      console.log("WebSocket соединение закрыто")
-      setLoading(false)
-    }
-
-    return () => {
-      ws.close()
-    }
-  }, [])
-
-  if (loading) {
-    return <Skeleton className="w-full h-6 my-2" />
-  }
-
-  return (
+  return isLoading ? (
+    <div className='pt-14'>
+      <Skeleton className="mb-4 w-full h-6 rounded" />
+      <Skeleton className="mb-4 w-full h-6 rounded" />
+      <Skeleton className="mb-4 w-full h-6 rounded" />
+    </div>
+  ) : (
     <Table>
+      <TableCaption>A summary of the last 10 transactions.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>Transaction Hash</TableHead>
+          <TableHead className="w-[200px]">Transaction Hash</TableHead>
           <TableHead>Height</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead>Time</TableHead>
+          <TableHead>Result</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {transactions.map((tx, index) => (
+        {transactions.map((transaction, index) => (
           <TableRow key={index}>
-            <TableCell>{tx.hash}</TableCell>
-            <TableCell>{tx.height}</TableCell>
-            <TableCell>{tx.status}</TableCell>
+            <TableCell className="font-medium">
+            <Link href={`/tx/${transaction.hash}`}>
+  <a className="text-blue-600 hover:text-blue-800 visited:text-purple-600">{transaction.hash}</a>
+</Link>
+            </TableCell>
+            <TableCell>{transaction.header_height}</TableCell>
+            <TableCell>{formatDistanceToNow(new Date(transaction.header_time), { addSuffix: true })}</TableCell>
+            <TableCell>{transaction.return_code === 0 ? 'Success' : 'Failed'}</TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
-  )
-}
+  );
+};
 
-export default TransactionsPage
+export default TransactionsPage;

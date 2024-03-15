@@ -89,13 +89,15 @@ const BlockDetailsPage: React.FC = () => {
 
   return (
     <div className="p-5 space-y-5">
-      {blockDetails && <BlockDetailsComponent blockDetails={blockDetails} />}
       <div className="flex flex-wrap -mx-2">
-        <div className="w-full lg:w-1/2 px-2">
+      <div className="w-full lg:w-1/2 px-2">
+      {blockDetails && <BlockDetailsComponent blockDetails={blockDetails} />}
+      </div>
+        {/* <div className="w-full lg:w-1/2 px-2">
           {validators && validators.length > 0 && (
             <ValidatorsComponent validators={validators} height={height!} />
           )}
-        </div>
+        // </div> */}
         <div className="w-full lg:w-1/2 px-2">
           {transactions && transactions.length > 0 && (
             <BlockTransactionsComponent transactions={transactions} />

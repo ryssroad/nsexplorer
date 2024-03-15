@@ -6,7 +6,7 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import FooterComponent from "@/components/FooterComponent"
+import LastBlock from "@/components/LastBlock"
 
 export default function SearchPage() {
   const [searchInput, setSearchInput] = useState("")
@@ -27,7 +27,7 @@ export default function SearchPage() {
         <div className="w-5/6">
           <form
             onSubmit={handleSearchSubmit}
-            className="flex items-center justify-center space-x-2 py-8"
+            className="flex items-center justify-center space-x-2 py-4"
           >
             <Input
               type="search"
@@ -41,7 +41,7 @@ export default function SearchPage() {
             </Button>
           </form>
           <div className="text-sm text-gray-600">
-          <FooterComponent />
+          <LastBlock />
         </div>
         </div>
         

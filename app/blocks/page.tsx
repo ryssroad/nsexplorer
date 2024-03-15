@@ -1,14 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from "@/components/ui/card";
-import {
   Table,
   TableBody,
   TableCaption,
@@ -21,49 +13,33 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 
-
 interface BlockInfo {
-  height: string;
-  blockId: string;
-  time: string;
-  proposerAddress: string;
-  txCount: string;
-
+  block_id: string;
+  header_height: number;
+  header_time: string;
+  header_proposer_address: string;
+  transactions_count: string;
 }
-
-
 
 const BlocksPage: React.FC = () => {
   const [blocks, setBlocks] = useState<BlockInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const fetchLastTenBlocks = async () => {
       try {
-        // Получаем информацию о последнем блоке
-        const lastBlockResponse = await fetch(`${process.env.NEXT_PUBLIC_INDEXER_API_URL}/block/last`);
-        if (!lastBlockResponse.ok) {
+        const response = await fetch("https://namada-explorer-api.stakepool.dev.br/node/blocks/list/10");
+        if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const lastBlockData = await lastBlockResponse.json();
-        let lastHeight = lastBlockData.header.height;
-
-        // Получаем информацию о предыдущих 9 блоках
-        const blocksInfo: BlockInfo[] = [];
-        for (let i = 0; i < 10; i++) {
-          const blockResponse = await fetch(`${process.env.NEXT_PUBLIC_INDEXER_API_URL}/block/height/${lastHeight}`);
-          if (!blockResponse.ok) {
-            throw new Error(`Failed to fetch block at height ${lastHeight}`);
-          }
-          const blockData = await blockResponse.json();
-          blocksInfo.push({
-            height: blockData.header.height,
-            blockId: blockData.block_id,
-            time: blockData.header.time,
-            proposerAddress: blockData.header.proposer_address,
-            txCount: blockData.tx_hashes.length,
-          });
-          lastHeight--; // уменьшаем высоту для получения предыдущего блока
-        }
+        const data = await response.json();
+        const blocksInfo: BlockInfo[] = data.map((block: any) => ({
+          block_id: block.block_id,
+          header_height: block.header_height,
+          header_time: block.header_time,
+          header_proposer_address: block.header_proposer_address,
+          transactions_count: block.transactions_count,
+        }));
         setBlocks(blocksInfo);
         setIsLoading(false);
       } catch (error) {
@@ -77,46 +53,41 @@ const BlocksPage: React.FC = () => {
 
   return isLoading ? (
     <div className='pt-14'>
-    <Skeleton className="mb-4 w-full h-6 rounded" />
-    <Skeleton className="mb-4 w-full h-6 rounded" />
-    <Skeleton className="mb-4 w-full h-6 rounded" />
-  </div>
-) : (
-        <Table>
-          <TableCaption>A summary of the last 10 blocks.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Height</TableHead>
-              <TableHead>Block ID</TableHead>
-              <TableHead>Time</TableHead>
-              <TableHead>TX Count</TableHead>
-              <TableHead>Proposer Address</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {blocks.map((block, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">
-                <Link 
-                href={`/block/${block.height}`}
+      <Skeleton className="mb-4 w-full h-6 rounded" />
+      <Skeleton className="mb-4 w-full h-6 rounded" />
+      <Skeleton className="mb-4 w-full h-6 rounded" />
+    </div>
+  ) : (
+    <Table>
+      <TableCaption>A summary of the last 10 blocks.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Height</TableHead>
+          <TableHead>Block ID</TableHead>
+          <TableHead>Time</TableHead>
+          <TableHead>TX Count</TableHead>
+          <TableHead>Proposer Address</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {blocks.map((block, index) => (
+          <TableRow key={index}>
+            <TableCell className="font-medium">
+              <Link 
+                href={`/block/${block.header_height}`}
                 className="text-blue-600 hover:text-blue-800 visited:text-purple-600"
               >
-                {block.height}
+                {block.header_height}
               </Link>
             </TableCell>
-                <TableCell>{block.blockId}</TableCell>
-                <TableCell>{formatDistanceToNow(new Date(block.time), { addSuffix: true })}</TableCell>
-                <TableCell>{block.txCount}</TableCell>
-                <TableCell>{block.proposerAddress}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      // </CardContent>
-      /* <CardFooter>
-        <p>This is a summary of the blockchain's most recent blocks.</p>
-      </CardFooter> */
-    // </Card>
+            <TableCell>{block.block_id}</TableCell>
+            <TableCell>{formatDistanceToNow(new Date(block.header_time), { addSuffix: true })}</TableCell>
+            <TableCell>{block.transactions_count}</TableCell>
+            <TableCell>{block.header_proposer_address}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
 

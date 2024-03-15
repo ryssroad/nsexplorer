@@ -18,6 +18,10 @@ export const siteConfig = {
       href: "/transactions",
     },
     {
+      title: "Validators",
+      href: "/validators",
+    },
+    {
       title: "Proposals",
       href: "/govs",
     },
