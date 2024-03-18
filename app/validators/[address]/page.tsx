@@ -162,37 +162,37 @@ const ValidatorDetails: React.FC<Props> = ({ params }) => {
                 <TableCell>State</TableCell>
                 <TableCell
                   style={{
-                    color: validator.state === "consensus" ? "green" : "red",
+                    color: validator?.state === "consensus" ? "green" : "red",
                   }}
                 >
-                  {validator.state}
+                  {validator?.state}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Uptime</TableCell>
                 <TableCell>
-                  {((validator.uptime?.uptime ?? 0) * 100).toFixed(2)}%
+                  {((validator?.uptime?.uptime ?? 0) * 100).toFixed(2)}%
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>NAM Address</TableCell>
-                <TableCell>{validator.nam_address}</TableCell>
+                <TableCell>{validator?.nam_address}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>TM Address</TableCell>
-                <TableCell>{validator.tm_address}</TableCell>
+                <TableCell>{validator?.tm_address}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Stake</TableCell>
                 <TableCell>
-                  {(Number(validator.stake) / 1000000).toLocaleString()} NAAN
+                  {(Number(validator?.stake) / 1000000).toLocaleString()} NAAN
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Commission Rate</TableCell>
                 <TableCell>
                   {Math.round(
-                    (Number(validator.commission?.commission_rate) ?? 0) * 100
+                    (Number(validator?.commission?.commission_rate) ?? 0) * 100
                   )}
                   %
                 </TableCell>
@@ -203,14 +203,14 @@ const ValidatorDetails: React.FC<Props> = ({ params }) => {
               </TableRow> */}
               <TableRow>
                 <TableCell>Email</TableCell>
-                <TableCell>{validator.metadata?.email}</TableCell>
+                <TableCell>{validator?.metadata?.email}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Website</TableCell>
                 <TableCell>
-                  {validator.metadata?.website ? (
+                  {validator?.metadata?.website ? (
                     <a
-                      href={validator.metadata.website}
+                      href={validator?.metadata.website}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-gray-400 hover:text-gray-600 visited:text-blue-600"
@@ -224,7 +224,7 @@ const ValidatorDetails: React.FC<Props> = ({ params }) => {
               </TableRow>
               <TableRow>
                 <TableCell>Discord Handle</TableCell>
-                <TableCell>{validator.metadata?.discord_handle}</TableCell>
+                <TableCell>{validator?.metadata?.discord_handle}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
