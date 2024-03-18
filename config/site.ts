@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "namEx",
+  name: "SExxp  ",
   description:
     "Exerimental Namada SE explorer",
   mainNav: [
@@ -21,10 +21,10 @@ export const siteConfig = {
       title: "Validators",
       href: "/validators",
     },
-    {
-      title: "Proposals",
-      href: "/govs",
-    },
+    // {
+    //   title: "Proposals",
+    //   href: "/govs",
+    // },
   ],
   links: {
     twitter: "https://twitter.com/shadcn",

@@ -32,8 +32,8 @@ const BlockTransactionsComponent: React.FC<BlockTransactionsProps> = ({
                   <TableCell>
                     <Link
                       href={`/tx/${transaction.hash_id}`}
-                      className="text-blue-600 hover:text-blue-800 visited:text-purple-600"
-                      legacyBehavior>
+                      className="text-gray-400 hover:text-gray-600 visited:text-blue-600"
+                      >
                       {transaction.hash_id}
                     </Link>
                   </TableCell>

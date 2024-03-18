@@ -76,8 +76,8 @@ const TransactionDetailsComponent: React.FC<
                   {blockHeight ? (
                     <Link
                       href={`/block/${blockHeight}`}
-                      className="text-blue-600 hover:text-blue-800 visited:text-purple-600"
-                      legacyBehavior>
+                      className="text-gray-400 hover:text-gray-600 visited:text-blue-600"
+                      >
                       {blockHeight}
                     </Link>
                   ) : (

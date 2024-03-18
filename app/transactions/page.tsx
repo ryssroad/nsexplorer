@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from "react"
-import Link from "next/link"
-import { formatDistanceToNow } from "date-fns"
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -13,89 +13,88 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 interface TransactionInfo {
-  hash: string
-  header_height: number
-  header_time: string
-  return_code: number
+  hash_id: string;
+  tx_type: string;
+  header_height: number;
+  time: string;
 }
 
 const TransactionsPage: React.FC = () => {
-  const [transactions, setTransactions] = useState<TransactionInfo[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [transactions, setTransactions] = useState<TransactionInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLastTenTransactions = async () => {
+    const fetchLastBlockTransactions = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch(
-          "https://namada-explorer-api.stakepool.dev.br/node/transactions/list/10"
-        )
+        // Замените URL на актуальный endpoint для получения данных последнего блока
+        const response = await fetch("https://nam-dex.systemd.run/block/last");
         if (!response.ok) {
-          throw new Error("Network response was not ok")
+          throw new Error("Network response was not ok");
         }
-        const data = await response.json()
-        const transactionsInfo: TransactionInfo[] = data.map(
-          (transaction: any) => ({
-            hash: transaction.hash,
-            header_height: transaction.header_height,
-            header_time: transaction.header_time,
-            return_code: transaction.return_code,
-          })
-        )
-        setTransactions(transactionsInfo)
-        setIsLoading(false)
-      } catch (error) {
-        console.error("Could not fetch transactions:", error)
-        setIsLoading(false)
-      }
-    }
+        const { tx_hashes, header } = await response.json();
 
-    fetchLastTenTransactions()
-  }, [])
+        // Формируем данные транзакций на основе ответа о последнем блоке
+        const transactionsInfo = tx_hashes.map((tx) => ({
+          hash_id: tx.hash_id,
+          tx_type: tx.tx_type,
+          header_height: header.height,
+          time: header.time,
+        }));
+
+        setTransactions(transactionsInfo);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Could not fetch transactions:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchLastBlockTransactions();
+  }, []);
 
   return isLoading ? (
     <div className="pt-14">
-      <Skeleton className="mb-4 w-full h-6 rounded" />
-      <Skeleton className="mb-4 w-full h-6 rounded" />
-      <Skeleton className="mb-4 w-full h-6 rounded" />
+      {/* Skeleton loaders */}
     </div>
   ) : (
     <Table>
-      <TableCaption>A summary of the last 10 transactions.</TableCaption>
+      <TableCaption>A summary of the last block transactions.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[200px]">Transaction Hash</TableHead>
+          <TableHead>Type</TableHead>
+          <TableHead>Transaction Hash</TableHead>
           <TableHead>Height</TableHead>
           <TableHead>Time</TableHead>
-          <TableHead>Result</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {transactions.map((transaction, index) => (
           <TableRow key={index}>
+            <TableCell>{transaction.tx_type}</TableCell>
             <TableCell className="font-medium">
               <Link
-                href={`/tx/${transaction.hash}`}
-                className="text-blue-600 hover:text-blue-800 visited:text-purple-600"
-              >{transaction.hash}
+                href={`/tx/${transaction.hash_id}`}
+                className="text-gray-400 hover:text-gray-600 visited:text-blue-600"
+              >
+                {transaction.hash_id}
               </Link>
             </TableCell>
             <TableCell>{transaction.header_height}</TableCell>
             <TableCell>
-              {formatDistanceToNow(new Date(transaction.header_time), {
+              {formatDistanceToNow(new Date(transaction.time), {
                 addSuffix: true,
+                includeSeconds: true,
               })}
-            </TableCell>
-            <TableCell>
-              {transaction.return_code === 0 ? "Success" : "Failed"}
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
-  )
-}
+  );
+};
 
-export default TransactionsPage
+export default TransactionsPage;

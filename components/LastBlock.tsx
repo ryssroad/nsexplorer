@@ -72,8 +72,8 @@ const LastBlockComponent: React.FC = () => {
           <TableCell>
             {lastBlockInfo && (
               <span>
-                {formatDistanceToNow(new Date(lastBlockInfo.time), { addSuffix: true })}
-              </span>
+              {Math.floor((new Date().getTime() - new Date(lastBlockInfo.time).getTime()) / 1000)} seconds ago
+            </span>
             )}
           </TableCell>
         </TableRow>

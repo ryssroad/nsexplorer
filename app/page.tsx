@@ -31,7 +31,7 @@ export default function SearchPage() {
           >
             <Input
               type="search"
-              placeholder="search tx/block"
+              placeholder="tx hash / block number / val hex address"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full"

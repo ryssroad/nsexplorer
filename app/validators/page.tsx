@@ -1,17 +1,17 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import Link from 'next/link';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-  } from "@/components/ui/pagination";
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import {
   Table,
   TableBody,
@@ -20,126 +20,159 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
 
 interface Validator {
-  address: string;
-  pub_key: {
-    type: string;
-    value: string;
-  };
-  voting_power: number;
-  proposer_priority: string;
-  voting_percentage: number;
-  moniker: string;
-  operator_address: string;
+  address: string
+  voting_power: string
+}
+
+interface ChainStatus {
+  epoch: number;
+  active_validators: number;
 }
 
 const ValidatorsPage: React.FC = () => {
+  const [chainStatus, setChainStatus] = useState<ChainStatus>({ epoch: 0, active_validators: 0 });
+  const [filter, setFilter] = useState("");
   const [validators, setValidators] = useState<Validator[]>([]);
-  const [filter, setFilter] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 10; // Количество записей на страницу
+  const [totalPages, setTotalPages] = useState<number>(0);
+
+  // Функция для обработки изменения фильтра
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFilter(value);
+    setCurrentPage(1); // Начинаем с первой страницы при изменении фильтра
+  };
 
   useEffect(() => {
-    const fetchValidators = async () => {
-      const response = await fetch(
-        "https://namada-explorer-api.stakepool.dev.br/node/validators/list"
+    const fetchTotalValidators = async () => {
+      const statusResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_INDEXER_API_URL}/chain/status`
       );
-      const data = await response.json();
-      setValidators(data.currentValidatorsList);
+      const statusData = await statusResponse.json();
+      return statusData.staking_info.active_validators;
     };
 
-    fetchValidators();
+    const fetchChainStatus = async () => {
+      const response = await fetch("https://nam-dex.systemd.run/chain/status");
+      const data = await response.json();
+      setChainStatus({
+        epoch: data.epoch,
+        active_validators: data.staking_info.active_validators,
+      });
+    };
+
+    const fetchValidators = async (totalValidators: number) => {
+      const pagesRequired = Math.ceil(totalValidators / 100);
+      let allValidators: Validator[] = [];
+
+      for (let i = 1; i <= pagesRequired; i++) {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_VALIDATORS_API_URL}/validators?page=${i}&per_page=100`
+        );
+        const data = await response.json();
+        allValidators = [...allValidators, ...data.result.validators];
+      }
+
+      setValidators(allValidators);
+      setTotalPages(Math.ceil(allValidators.length / pageSize));
+    };
+
+    fetchTotalValidators().then((totalValidators) => {
+      fetchValidators(totalValidators);
+    });
+    fetchChainStatus();
   }, []);
 
-  const pageSize = 10;
-  const pageCount = Math.ceil(validators.length / pageSize);
-  const filteredValidators = validators.filter((validator) =>
-    validator.address.toLowerCase().includes(filter.toLowerCase())
-  );
+  // Пересчитываем totalPages при изменении фильтра
+  useEffect(() => {
+    setTotalPages(Math.ceil(filteredValidators.length / pageSize));
+  }, [filter, pageSize, validators]);
 
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter(event.target.value);
-    setCurrentPage(1); // Reset to first page when filter changes
-  };
-
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const paginatedValidators = filteredValidators.slice(
+  // Получаем валидаторов для текущей страницы, учитывая фильтр
+  const filteredValidators = validators.filter(validator => validator.address.includes(filter));
+  const currentValidators = filteredValidators.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
+  // Функция для перехода на предыдущую страницу
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  // Функция для перехода на следующую страницу
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
   return (
-    <div>
-        <div className="static top-0 right-0 w-full max-w-sm flex justify-items-end pr-4 pt-4 pb-4">
-        <Label htmlFor="filter" className="sr-only">
-          Filter
+    <div className="container mx-auto p-4">
+      <div className="mb-4">
+        <Label htmlFor="filter" className="block mb-2 text-sm font-medium text-gray-900">
+          Filter by address
         </Label>
-        <input
-          type="text"
+        <Input
           id="filter"
-          placeholder="Address hex filter"
+          type="text"
           value={filter}
           onChange={handleFilterChange}
-          className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none"
+          placeholder="Enter address..."
         />
       </div>
       <Table>
-        <TableCaption>Validators</TableCaption>
+        <TableCaption className="pb-4">
+          Validators Overview - Epoch: {chainStatus.epoch}, Active Validators: {chainStatus.active_validators}
+        </TableCaption>
+
         <TableHeader>
           <TableRow>
-            <TableHead>Moniker</TableHead>
             <TableHead>Address</TableHead>
             <TableHead>Voting Power</TableHead>
-            <TableHead>Voting Percentage</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {paginatedValidators.map((validator) => (
-            <TableRow key={validator.address}>
-              <TableCell>{validator.moniker}</TableCell>
+          {currentValidators.map((validator, index) => (
+            <TableRow key={index}>
               <TableCell>
-                <Link
-                  className="text-blue-500 hover:text-blue-700"
-                  href={`/validators/${validator.address}`}
-                  legacyBehavior>
+                <Link href={`/validators/${validator.address}`} className="text-gray-400 hover:text-gray-600 visited:text-blue-600">
                   {validator.address}
                 </Link>
               </TableCell>
               <TableCell>
-                {(validator.voting_power / 1000000).toLocaleString()} NAAN
+                {(Number(validator.voting_power) / 1000000).toLocaleString()}
               </TableCell>
-              <TableCell>{validator.voting_percentage.toFixed(2)}%</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className="flex justify-center mt-4">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious onClick={() => goToPage(currentPage - 1)} className="cursor-pointer"/>
+      <Pagination>
+        <PaginationContent>
+          <PaginationPrevious
+            onClick={goToPreviousPage}
+            className="cursor-pointer"
+          />
+          {[...Array(totalPages)].map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
+                onClick={() => setCurrentPage(index + 1)}
+                isActive={currentPage === index + 1}
+                className="cursor-pointer"
+              >
+                {index + 1}
+              </PaginationLink>
             </PaginationItem>
-            {[...Array(pageCount)].map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  onClick={() => goToPage(index + 1)}
-                  isActive={currentPage === index + 1}
-                  className="cursor-pointer"
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext onClick={() => goToPage(currentPage + 1)} className="cursor-pointer"/>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+          ))}
+          <PaginationNext onClick={goToNextPage} className="cursor-pointer" />
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

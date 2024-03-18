@@ -1,0 +1,124 @@
+"use client"
+
+// app/validators/[address]/page.tsx
+import React, { useEffect, useState } from "react"
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
+// Определение интерфейса валидатора
+interface Validator {
+  address: string
+  pub_key: {
+    type: string
+    value: string
+  }
+  voting_power: number
+  proposer_priority: string
+  voting_percentage: number
+  moniker: string
+  operator_address: string
+
+  missed_block_counter?: number
+  validator_address?: string
+}
+
+// Объявление интерфейса для пропсов
+interface ValidatorDetailsProps {
+  params: {
+    address: string
+  }
+}
+
+const ValidatorDetails: React.FC<ValidatorDetailsProps> = ({ params }) => {
+  const { address } = params // Получаем адрес из пропсов
+  const [validator, setValidator] = useState<Validator | null>(null)
+
+  useEffect(() => {
+    const fetchValidatorDetails = async () => {
+      if (!address) return
+      try {
+        // Запрос данных валидатора
+        const validatorResponse = await fetch(
+          "https://namada-explorer-api.stakepool.dev.br/node/validators/list"
+        )
+        const validatorData = await validatorResponse.json()
+        let currentValidator = validatorData.currentValidatorsList.find(
+          (v: any) => v.address === address
+        )
+
+        // Запрос информации о пропущенных блоках и адресе валидатора
+        const signingInfoResponse = await fetch(
+          "https://api-namada.cosmostation.io/validator_siging_infos"
+        )
+        const signingInfos = await signingInfoResponse.json()
+
+        // Сопоставление и обновление данных валидатора
+        const signingInfo = signingInfos.find(
+          (info: any) => info.tendermint_address === currentValidator.address
+        )
+        if (signingInfo) {
+          currentValidator = { ...currentValidator, ...signingInfo }
+        }
+
+        setValidator(currentValidator || null)
+      } catch (error) {
+        console.error("Failed to fetch validator details:", error)
+      }
+    }
+
+    fetchValidatorDetails()
+  }, [address])
+
+  if (!validator) {
+    return <div>Loading or no validator found...</div>
+  }
+
+  return (
+    <div>
+      <div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Validator Details</CardTitle>
+            <CardDescription>{validator.address}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <img src="path/to/image.jpg" />
+              <div>
+                <strong>Andrew Alfred</strong>
+                <span>Technical advisor</span>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <p>Card Footer</p>
+          </CardFooter>
+        </Card>
+      </div>
+      {/* <h1>Validator Details</h1> */}
+      {/* <div>Address: {validator.address}</div> */}
+      <div>Public Key: {validator.pub_key.value}</div>
+      <div>Voting Power: {validator.voting_power}</div>
+      <div>Proposer Priority: {validator.proposer_priority}</div>
+      <div>Voting Percentage: {validator.voting_percentage.toFixed(2)}%</div>
+      <div>
+        Moniker:{" "}
+        {validator.moniker
+          ? validator.moniker
+          : "* not applicable for non-genesis"}
+      </div>
+      <div>Operator Address: {validator.operator_address}</div>
+      <div>Validator Address: {validator.validator_address}</div>
+      <div>Missed Block Counter: {validator.missed_block_counter}</div>
+    </div>
+  )
+}
+
+export default ValidatorDetails

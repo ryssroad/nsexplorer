@@ -105,6 +105,7 @@ const BlockDetailsPage: React.FC = () => {
         </div>
       </div>
     </div>
+
   )
 }
 
