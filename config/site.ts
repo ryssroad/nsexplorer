@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "SExxp  ",
+  name: "NSExp",
   description:
     "Exerimental Namada SE explorer",
   mainNav: [

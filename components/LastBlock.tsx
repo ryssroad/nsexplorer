@@ -7,6 +7,7 @@ interface LastBlockInfo {
   height: string;
   txCount: number;
   time: string;
+  epoch: number;
 }
 
 const LastBlockComponent: React.FC = () => {
@@ -24,12 +25,14 @@ const LastBlockComponent: React.FC = () => {
         const txCount = blockData.tx_hashes?.length || 0;
         const blockTime = blockData.header?.time;
         const blockHeight = blockData.header?.height;
+        const epoch = blockData.epoch;
 
         if (blockHeight && blockTime) {
           setLastBlockInfo({
             height: blockHeight,
             time: blockTime,
             txCount: txCount,
+            epoch: epoch,
           });
           setIsLoading(false);
         }
@@ -64,6 +67,8 @@ const LastBlockComponent: React.FC = () => {
     <Table>
       <TableBody>
         <TableRow>
+        <TableCell className="text-slate-400 text-right">Epoch:</TableCell>
+          <TableCell>{lastBlockInfo?.epoch}</TableCell>
           <TableCell className="text-slate-400 text-right">Last Block Height:</TableCell>
           <TableCell>{lastBlockInfo?.height}</TableCell>
           <TableCell className="text-slate-400 text-right">TX count:</TableCell>

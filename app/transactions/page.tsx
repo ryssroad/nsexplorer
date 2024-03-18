@@ -58,7 +58,11 @@ const TransactionsPage: React.FC = () => {
 
   return isLoading ? (
     <div className="pt-14">
-      {/* Skeleton loaders */}
+      <div className="pt-14">
+        <Skeleton className="mb-4 w-full h-6 rounded" />
+        <Skeleton className="mb-4 w-full h-6 rounded" />
+        <Skeleton className="mb-4 w-full h-6 rounded" />
+      </div>
     </div>
   ) : (
     <Table>

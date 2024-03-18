@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Validator {
   address: string
@@ -37,14 +38,13 @@ const ValidatorsPage: React.FC = () => {
   const [filter, setFilter] = useState("");
   const [validators, setValidators] = useState<Validator[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const pageSize = 10; // Количество записей на страницу
+  const pageSize = 10;
   const [totalPages, setTotalPages] = useState<number>(0);
 
-  // Функция для обработки изменения фильтра
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setFilter(value);
-    setCurrentPage(1); // Начинаем с первой страницы при изменении фильтра
+    setCurrentPage(1);
   };
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const ValidatorsPage: React.FC = () => {
     };
 
     const fetchChainStatus = async () => {
-      const response = await fetch("https://nam-dex.systemd.run/chain/status");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_INDEXER_API_URL}/chain/status`);
       const data = await response.json();
       setChainStatus({
         epoch: data.epoch,
@@ -87,26 +87,22 @@ const ValidatorsPage: React.FC = () => {
     fetchChainStatus();
   }, []);
 
-  // Пересчитываем totalPages при изменении фильтра
   useEffect(() => {
     setTotalPages(Math.ceil(filteredValidators.length / pageSize));
   }, [filter, pageSize, validators]);
 
-  // Получаем валидаторов для текущей страницы, учитывая фильтр
   const filteredValidators = validators.filter(validator => validator.address.includes(filter));
   const currentValidators = filteredValidators.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
-  // Функция для перехода на предыдущую страницу
   const goToPreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
     }
   };
 
-  // Функция для перехода на следующую страницу
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
