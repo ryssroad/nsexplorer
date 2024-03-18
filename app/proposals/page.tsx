@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react"
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -86,9 +87,9 @@ const ProposalsPage = () => {
     currentEndedPage * itemsPerPage
   )
 
-  const totalProps = proposals.length;
-  const upcomingProps = upcomingProposals.length;
-  const ongoingProps = ongoingProposals.length;
+  const totalProps = proposals.length
+  const upcomingProps = upcomingProposals.length
+  const ongoingProps = ongoingProposals.length
 
   // Функции для управления пагинацией
   const handlePrevious = () => setCurrentPage(currentPage - 1)
@@ -99,9 +100,15 @@ const ProposalsPage = () => {
     <div>
       <div className="grid grid-cols-4 gap-4 bg-slate-100 p-8 mb-8">
         <div className="text-sm text-muted-foreground">Epoch: {epoch}</div>
-        <div className="text-sm text-muted-foreground">Total props: {totalProps}</div>
-        <div className="text-sm text-muted-foreground">Upcoming props: {upcomingProps}</div>
-        <div className="text-sm text-muted-foreground">Ongoing props: {ongoingProps}</div>
+        <div className="text-sm text-muted-foreground">
+          Total props: {totalProps}
+        </div>
+        <div className="text-sm text-muted-foreground">
+          Upcoming props: {upcomingProps}
+        </div>
+        <div className="text-sm text-muted-foreground">
+          Ongoing props: {ongoingProps}
+        </div>
       </div>
 
       {/* Вкладки с предложениями */}
@@ -113,7 +120,7 @@ const ProposalsPage = () => {
         </TabsList>
 
         <TabsContent value="current">
-        <ProposalsTable
+          <ProposalsTable
             proposals={paginatedOngoingProposals} // Используйте непосредственно paginatedOngoingProposals
             caption="Current Proposals"
           />
@@ -157,7 +164,7 @@ const ProposalsPage = () => {
         </TabsContent>
 
         <TabsContent value="upcoming">
-        <ProposalsTable
+          <ProposalsTable
             proposals={paginatedUpcomingProposals} // Используйте непосредственно paginatedUpcomingProposals
             caption="Upcoming Proposals"
           />
@@ -201,8 +208,8 @@ const ProposalsPage = () => {
         </TabsContent>
 
         <TabsContent value="ended">
-        <ProposalsTable
-            proposals={paginatedEndedProposals} // Используйте непосредственно paginatedEndedProposals
+          <ProposalsTable
+            proposals={paginatedEndedProposals}
             caption="Ended Proposals"
           />
           <Pagination>
@@ -218,13 +225,47 @@ const ProposalsPage = () => {
               </PaginationItem>
               {Array.from(
                 { length: Math.ceil(endedProposals.length / itemsPerPage) },
-                (_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink onClick={() => setCurrentEndedPage(i + 1)}>
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                )
+                (_, i) => {
+                  const page = i + 1
+                  // Показывать начальные страницы, текущую страницу и конечные страницы
+                  const isPageVisible =
+                    page === 1 ||
+                    page === Math.ceil(endedProposals.length / itemsPerPage) ||
+                    (page >= currentEndedPage - 2 &&
+                      page <= currentEndedPage + 2)
+
+                  // Многоточие перед текущей страницей, если есть скрытые страницы перед ней
+                  const showPreviousEllipsis = currentEndedPage > 4 && i === 2
+                  // Многоточие после текущей страницы, если есть скрытые страницы после неё
+                  const showNextEllipsis =
+                    currentEndedPage <
+                      Math.ceil(endedProposals.length / itemsPerPage) - 3 &&
+                    i === Math.ceil(endedProposals.length / itemsPerPage) - 3
+
+                  return (
+                    <>
+                      {showPreviousEllipsis && (
+                        <PaginationItem key="ellipsis-prev">
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                      {isPageVisible && (
+                        <PaginationItem key={i}>
+                          <PaginationLink
+                            onClick={() => setCurrentEndedPage(page)}
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )}
+                      {showNextEllipsis && (
+                        <PaginationItem key="ellipsis-next">
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                    </>
+                  )
+                }
               )}
               <PaginationItem>
                 <PaginationNext
