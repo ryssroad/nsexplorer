@@ -38,7 +38,7 @@ const TransactionsPage: React.FC = () => {
         const { tx_hashes, header } = await response.json();
 
         // Формируем данные транзакций на основе ответа о последнем блоке
-        const transactionsInfo = tx_hashes.map((tx) => ({
+        const transactionsInfo = tx_hashes.map((tx: any) => ({
           hash_id: tx.hash_id,
           tx_type: tx.tx_type,
           header_height: header.height,
@@ -56,6 +56,7 @@ const TransactionsPage: React.FC = () => {
     fetchLastBlockTransactions();
   }, []);
 
+
   return isLoading ? (
     <div className="pt-14">
       <div className="pt-14">
@@ -64,6 +65,8 @@ const TransactionsPage: React.FC = () => {
         <Skeleton className="mb-4 w-full h-6 rounded" />
       </div>
     </div>
+  ) : transactions.length === 0 ? (
+    <p>No transactions in block</p>
   ) : (
     <Table>
       <TableCaption>A summary of the last block transactions.</TableCaption>

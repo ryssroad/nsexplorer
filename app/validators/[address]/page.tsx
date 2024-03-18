@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+
 import {
   Card,
   CardContent,
@@ -64,6 +65,8 @@ interface Props {
 const ValidatorDetails: React.FC<Props> = ({ params }) => {
   const { address } = params
   const [validator, setValidator] = useState<ValidatorInfo | null>(null)
+  const [signingInfoLoading, setSigningInfoLoading] = useState(true);
+  const [additionalInfoLoading, setAdditionalInfoLoading] = useState(true);
 
   // Fetch the signing information
   useEffect(() => {
@@ -91,6 +94,9 @@ const ValidatorDetails: React.FC<Props> = ({ params }) => {
       } catch (error) {
         console.error("Failed to fetch validator signing info:", error)
       }
+      finally {
+        setSigningInfoLoading(false);
+      }
     }
     fetchSigningInfo()
   }, [address]) // Depends only on address
@@ -103,7 +109,7 @@ const ValidatorDetails: React.FC<Props> = ({ params }) => {
       }
       try {
         console.log("Fetching additional validator information...")
-         const response = await fetch(
+        const response = await fetch(
           `${process.env.NEXT_PUBLIC_INDEXER_API_URL}/validator/${validator.operator_address}/info`
         )
         const additionalData = await response.json()
@@ -118,19 +124,23 @@ const ValidatorDetails: React.FC<Props> = ({ params }) => {
       } catch (error) {
         console.error("Failed to fetch additional validator info:", error)
       }
+      finally {
+        setAdditionalInfoLoading(false);
+      }
     }
 
     fetchValidatorInfo()
   }, [validator?.operator_address]) // Depends on operator_address
 
-  if (!validator) {
+  if (signingInfoLoading || additionalInfoLoading) {
     return (
       <div className="pt-14">
+        {/* Display Skeleton loading indicator until both requests are completed */}
         <Skeleton className="mb-4 w-full h-6 rounded" />
         <Skeleton className="mb-4 w-full h-6 rounded" />
         <Skeleton className="mb-4 w-full h-6 rounded" />
       </div>
-    )
+    );
   }
 
   return (
@@ -150,7 +160,13 @@ const ValidatorDetails: React.FC<Props> = ({ params }) => {
             <TableBody>
               <TableRow>
                 <TableCell>State</TableCell>
-                <TableCell style={{ color: validator.state === "consensus" ? "green" : "red" }}>{validator.state}</TableCell>
+                <TableCell
+                  style={{
+                    color: validator.state === "consensus" ? "green" : "red",
+                  }}
+                >
+                  {validator.state}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Uptime</TableCell>
@@ -182,9 +198,9 @@ const ValidatorDetails: React.FC<Props> = ({ params }) => {
                 </TableCell>
               </TableRow>
               {/* <TableRow>
-          <TableCell>Max Commission Change Per Epoch</TableCell>
-          <TableCell>{Math.round((Number(validator.commission?.max_commission_change_per_epoch) ?? 0) * 100)}%</TableCell>
-        </TableRow> */}
+                <TableCell>Max Commission Change Per Epoch</TableCell>
+                <TableCell>{Math.round((Number(validator.commission?.max_commission_change_per_epoch) ?? 0) * 100)}%</TableCell>
+              </TableRow> */}
               <TableRow>
                 <TableCell>Email</TableCell>
                 <TableCell>{validator.metadata?.email}</TableCell>
@@ -213,48 +229,8 @@ const ValidatorDetails: React.FC<Props> = ({ params }) => {
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter>
-          {/* Add any additional footer content here if needed */}
-        </CardFooter>
       </Card>
     </div>
-    // <div className="max-w-4xl mx-auto my-8">
-
-    //   <Card>
-    //     <CardHeader className="flex items-center justify-between">
-    //       <div>
-    //         <CardTitle>Validator Details</CardTitle>
-    //         <CardDescription>{address}</CardDescription>
-    //       </div>
-
-    //     </CardHeader>
-    //     <CardContent className="grid gap-4">
-    //     <div className=" flex items-center space-x-4 rounded-md border p-4">
-    //     <Avatar>
-    //         <AvatarImage src={validator.metadata?.avatar || "https://via.placeholder.com/150"} alt="Validator Avatar" className="w-12 h-12 rounded-full" />
-    //         <AvatarFallback className="w-12 h-12 rounded-full bg-gray-200 text-gray-800">AV</AvatarFallback>
-    //       </Avatar>
-    //     </div>
-    //       <Table>
-    //         <TableBody>
-    //           {/* Table rows */}
-    //           <TableRow>
-    //             <TableCell>Address</TableCell>
-    //             <TableCell>{address}</TableCell>
-    //           </TableRow>
-    //           <TableRow>
-    //             <TableCell>Operator Address</TableCell>
-    //             <TableCell>{validator.operator_address || "N/A"}</TableCell>
-    //           </TableRow>
-    //           {/* Add more rows as needed */}
-    //         </TableBody>
-    //       </Table>
-    //     </CardContent>
-    //     <CardFooter>
-    //       <p className="text-right text-sm text-gray-600">Additional information or actions</p>
-    //     </CardFooter>
-    //   </Card>
-    // </div>
   )
 }
 

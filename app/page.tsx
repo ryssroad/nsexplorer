@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import LastBlock from "@/components/LastBlock"
@@ -14,10 +13,21 @@ export default function SearchPage() {
 
   const handleSearchSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault()
-    const isTxHash = /^[0-9A-Fa-f]{64}$/.test(searchInput)
-    const path = isTxHash
-      ? `/tx/${searchInput.toLowerCase()}` // Path for transaction details
-      : `/block/${encodeURIComponent(searchInput)}`
+    const isTxHash = /^[0-9A-Fa-f]{64}$/.test(searchInput);
+    const isBlockHeight = /^[0-9]+$/.test(searchInput);
+    const isValidatorAddress = /^9256[A-Fa-f0-9]{36}$/.test(searchInput);
+    let path = "";
+
+    if (isTxHash) {
+      path = `/tx/${searchInput.toLowerCase()}`;
+    } else if (isBlockHeight) {
+      path = `/block/${encodeURIComponent(searchInput)}`;
+    } else if (isValidatorAddress) {
+      path = `/validators/${searchInput}`;
+    } else {
+      console.error("Invalid input");
+      return;
+    }
     router.push(path)
   }
 
