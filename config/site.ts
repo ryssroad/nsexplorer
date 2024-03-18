@@ -21,10 +21,10 @@ export const siteConfig = {
       title: "Validators",
       href: "/validators",
     },
-    // {
-    //   title: "Proposals",
-    //   href: "/govs",
-    // },
+    {
+      title: "Proposals",
+      href: "/proposals",
+    }
   ],
   links: {
     twitter: "https://twitter.com/shadcn",
