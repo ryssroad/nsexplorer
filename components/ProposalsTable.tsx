@@ -43,7 +43,7 @@ const ProposalsTable: React.FC<ProposalsTableProps> = ({
   caption,
 }) => {
   return (
-    <div>
+    <div className="pb-4">
       <Table>
         <TableCaption>{caption}</TableCaption>
         <TableHeader>
