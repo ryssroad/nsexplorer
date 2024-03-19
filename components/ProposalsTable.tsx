@@ -1,5 +1,6 @@
+"use client";
 import React, { Dispatch, SetStateAction } from "react"
-
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -57,7 +58,11 @@ const ProposalsTable: React.FC<ProposalsTableProps> = ({
         <TableBody>
           {proposals.map((proposal) => (
             <TableRow key={proposal.id}>
-              <TableCell>{proposal.id}</TableCell>
+              <TableCell>
+              <Link href={`/proposals/${proposal.id}`} className="text-blue-600 hover:underline cursor-pointer">
+                  {proposal.id}
+              </Link>
+              </TableCell>
               <TableCell className="truncate max-w-xs">
                 {proposal.content.title}
               </TableCell>

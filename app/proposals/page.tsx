@@ -1,5 +1,4 @@
-// ProposalsPage.js
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react"
 import { Table, TableBody, TableHeader, TableRow, TableHead, TableCell } from "@/components/ui/table"
@@ -83,9 +82,10 @@ const ProposalsPage = () => {
     currentOngoingPage * itemsPerPage
   )
 
-  const upcomingProposals = proposals.filter(
+  const upcomingProposals = proposals && proposals.filter(
     (p) => p.voting_start_epoch > epoch
-  )
+  );
+
   const paginatedUpcomingProposals = upcomingProposals.slice(
     (currentUpcomingPage - 1) * itemsPerPage,
     currentUpcomingPage * itemsPerPage
@@ -129,7 +129,7 @@ const ProposalsPage = () => {
         {/* Skeleton loading indicator for Table */}
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow key="1">
               <TableHead>
                 <Skeleton style={{ height: 20   , width: 50 }} />
               </TableHead>
@@ -146,7 +146,7 @@ const ProposalsPage = () => {
           </TableHeader>
           <TableBody>
             {[...Array(5)].map((_, index) => (
-              <TableRow key={index}>
+              <TableRow key={`skeleton-${index}`}>
                 <TableCell>
                   <Skeleton style={{ height: 20, width: 50 }} />
                 </TableCell>
@@ -196,7 +196,7 @@ const ProposalsPage = () => {
                       length: Math.ceil(ongoingProposals.length / itemsPerPage),
                     },
                     (_, i) => (
-                      <PaginationItem key={i}>
+                      <PaginationItem key={`ongoing-${i}`}>
                         <PaginationLink
                           onClick={() => setCurrentOngoingPage(i + 1)}
                           className="cursor-pointer"
@@ -247,7 +247,7 @@ const ProposalsPage = () => {
                       ),
                     },
                     (_, i) => (
-                      <PaginationItem key={i}>
+                      <PaginationItem key={`upcoming-${i}`}>
                         <PaginationLink
                           onClick={() => setCurrentUpcomingPage(i + 1)}
                           className="cursor-pointer"
@@ -321,7 +321,7 @@ const ProposalsPage = () => {
                             </PaginationItem>
                           )}
                           {isPageVisible && (
-                            <PaginationItem key={i}>
+                            <PaginationItem key={`ended-${i}`}>
                               <PaginationLink
                                 onClick={() => setCurrentEndedPage(page)}
                                 className="cursor-pointer"
