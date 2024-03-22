@@ -1,6 +1,9 @@
-"use client";
+"use client"
+
 import React, { Dispatch, SetStateAction } from "react"
-import Link from 'next/link';
+import Link from "next/link"
+
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Table,
   TableBody,
@@ -45,35 +48,40 @@ const ProposalsTable: React.FC<ProposalsTableProps> = ({
 }) => {
   return (
     <div className="pb-4">
-      <Table>
-        <TableCaption>{caption}</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead>Abstract</TableHead>
-            <TableHead>Author</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {proposals.map((proposal) => (
-            <TableRow key={proposal.id}>
-              <TableCell>
-              <Link href={`/proposals/${proposal.id}`} className="text-blue-600 hover:underline cursor-pointer">
-                  {proposal.id}
-              </Link>
-              </TableCell>
-              <TableCell className="truncate max-w-xs">
-                {proposal.content.title}
-              </TableCell>
-              <TableCell className="truncate max-w-xs">
-                {proposal.content.abstract}
-              </TableCell>
-              <TableCell>{proposal.author}</TableCell>
+      <ScrollArea className="h-[700px] w-full rounded-md border p-4">
+        <Table>
+          <TableCaption>{caption}</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Abstract</TableHead>
+              <TableHead>Author</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {proposals.map((proposal) => (
+              <TableRow key={proposal.id}>
+                <TableCell>
+                  <Link
+                    href={`/proposals/${proposal.id}`}
+                    className="text-blue-600 hover:underline cursor-pointer"
+                  >
+                    {proposal.id}
+                  </Link>
+                </TableCell>
+                <TableCell className="truncate max-w-xs">
+                  {proposal.content.title}
+                </TableCell>
+                <TableCell className="truncate max-w-xs">
+                  {proposal.content.abstract}
+                </TableCell>
+                <TableCell>{proposal.author}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </ScrollArea>
     </div>
   )
 }
