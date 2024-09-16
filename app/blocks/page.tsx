@@ -33,7 +33,7 @@ const BlocksPage: React.FC = () => {
       try {
         // Получаем данные последнего блока
         const lastBlockResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_INDEXER_API_URL}/chain/block/latest`
+          `${process.env.NEXT_PUBLIC_INDEXER_API_URL}chain/block/latest`
         )
         const lastBlockData = await lastBlockResponse.json()
         const lastBlockHeight = parseInt(lastBlockData.header.height)
