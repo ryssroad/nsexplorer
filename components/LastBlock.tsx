@@ -17,14 +17,14 @@ const LastBlockComponent: React.FC = () => {
   useEffect(() => {
     const fetchLastBlock = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_INDEXER_API_URL}/block/last`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_INDEXER_API_URL}/chain/block/latest`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const blockData = await response.json();
         const txCount = blockData.tx_hashes?.length || 0;
         const blockTime = blockData.header?.time;
-        const blockHeight = blockData.header?.height;
+        const blockHeight = blockData.height;
         const epoch = blockData.epoch;
 
         if (blockHeight && blockTime) {
