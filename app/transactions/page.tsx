@@ -31,7 +31,7 @@ const TransactionsPage: React.FC = () => {
       setIsLoading(true);
       try {
         // Замените URL на актуальный endpoint для получения данных последнего блока
-        const response = await fetch("https://nam-dex.systemd.run/block/last");
+        const response = await fetch("https://indexer.namada.tududes.com/api/v1/chain/block/latest");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
